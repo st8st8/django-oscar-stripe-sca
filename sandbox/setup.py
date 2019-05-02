@@ -15,7 +15,7 @@ setup(name='django-oscar-stripe-sandbox',
           'stripe==1.12.0',
            # Haystack currently expects an older version (2017-11-18)
            # sandbox settings currently setup for older versions
-           'Django<1.10',
+           'Django>=1.11.19',
       ],
       dependency_links=['https://code.stripe.com/stripe/stripe-1.12.0#egg=stripe'],
       # See http://pypi.python.org/pypi?%3Aaction=list_classifiers
