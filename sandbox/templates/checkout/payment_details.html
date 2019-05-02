@@ -1,0 +1,14 @@
+{% extends 'oscar/checkout/payment_details.html' %}
+{% load currency_filters %}
+
+{% block payment_details_content %}
+
+<form action="{% url 'checkout:preview' %}" class="form-stacked" method="POST">
+    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="{{ stripe_publishable_key }}" data-amount="{{ order_total_incl_tax_cents }}"
+            data-name="{{ shop_name }}"
+            data-description="{{ basket.num_items }} items ({{ order_total.incl_tax|currency }})">
+    </script>
+</form>
+
+{% endblock %}

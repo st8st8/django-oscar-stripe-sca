@@ -1,0 +1,42 @@
+{% extends 'oscar/checkout/payment_details.html' %}
+{% load i18n static %}
+{% load currency_filters %}
+
+{% block checkout_title %}{% trans "Checkout" %}{% endblock %}
+
+{% block checkout_nav %}
+    {% include 'checkout/nav.html' with step=3 %}
+{% endblock %}
+
+{% block order_contents %}{% endblock %}
+{% block shipping_address %}{% endblock %}
+{% block shipping_method %}{% endblock %}
+{% block payment_method %}{% endblock %}
+
+
+{% block payment_details_content %}
+    <p>Launching Stripe, please wait...</p>
+    {% if anon_checkout_allowed or request.user.is_authenticated %}
+        <div class="row">
+            <div class="col-xs-12">
+                <script src="https://js.stripe.com/v3"></script>
+                <script type="text/javascript">
+                jQuery(document).ready( function() {
+                    setTimeout(function() {
+                        console.log("Redirecting to stripe");
+                        var stripe = Stripe('{{ stripe_publishable_key }}');
+
+                        stripe.redirectToCheckout({
+                          sessionId: '{{ stripe_session_id }}'
+                        });
+                    }, 1000);
+                });
+                </script>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block hiddenforms %}
+    {{ stripe_token_form.as_p }}
+{% endblock %}
