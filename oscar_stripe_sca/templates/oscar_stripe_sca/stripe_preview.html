@@ -6,14 +6,12 @@
 {% endblock %}
 
 {% block payment_method %}
-    <div class="col-xs-12 col-sm-6">
+    <div class=" col-sm-12">
         <div class="sub-header">
             <h2>Payment</h2>
         </div>
         <div class="well well-success">
-            <p>
-                Your order is not complete until you click the "Place order" button.
-            </p>
+            <p class="text-danger font-weight-bold" >Your order is not complete until you click the "Place order" button.</p>
             <div>
                 <form method="post" action="" id="place_order_form">
                     {% csrf_token %}
