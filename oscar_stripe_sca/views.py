@@ -9,7 +9,7 @@ from django.views.generic import RedirectView
 from oscar.apps.checkout.views import PaymentDetailsView as CorePaymentDetailsView
 from oscar.core.exceptions import ModuleNotFoundError
 from oscar.core.loading import get_class, get_model
-from oscar_stripe.facade import logger
+from oscar_stripe_sca.facade import logger
 from django.utils.translation import ugettext_lazy as _
 
 from oscar_stripe_sca.facade import Facade
