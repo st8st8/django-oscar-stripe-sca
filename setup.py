@@ -2,10 +2,10 @@
 from setuptools import setup, find_packages
 
 setup(name='django-oscar-stripe-sca',
-      version='0.1',
+      version='2.0',
       url='https://github.com/st8st8/django-oscar-stripe-sca',
       author="Steve Bradshaw",
-      author_email="steve.bradshaw@tangentlabs.co.uk",
+      author_email="steve.bradshaw@mycoracle.com",
       description="Stripe Checkout (with Payment Intents) payment module for django-oscar",
       long_description=open('README.rst').read(),
       keywords="Payment, Stripe",
@@ -13,8 +13,8 @@ setup(name='django-oscar-stripe-sca',
       packages=find_packages(exclude=['sandbox*', 'tests*']),
       include_package_data=True,
       install_requires=[
-          'django>=1.11.19',
-          'django-oscar>=1.4',
+          'django>=2',
+          'django-oscar>=2',
           'stripe>=2.27.0',
       ],
       dependency_links=['https://code.stripe.com/stripe/stripe-2.27.0#egg=stripe'],
