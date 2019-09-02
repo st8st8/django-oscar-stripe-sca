@@ -44,7 +44,7 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
 
 class StripeSCASuccessResponseView(CorePaymentDetailsView):
     preview = True
-    template_name_preview = 'checkout/stripe_preview.html'
+    template_name_preview = 'oscar/checkout/stripe_preview.html'
 
     @property
     def pre_conditions(self):
