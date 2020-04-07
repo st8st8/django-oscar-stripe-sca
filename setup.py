@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='django-oscar-stripe-sca',
-      version='0.1',
+      version='0.1',      
       url='https://github.com/st8st8/django-oscar-stripe-sca',
       author="Steve Bradshaw",
       author_email="steve@pcfive.co.uk",

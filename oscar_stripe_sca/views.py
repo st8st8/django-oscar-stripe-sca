@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -11,7 +12,7 @@ from oscar.core.exceptions import ModuleNotFoundError
 from oscar.core.loading import get_class, get_model
 from oscar_stripe_sca.facade import logger
 from django.utils.translation import ugettext_lazy as _
-
+from django.contrib import messages
 from oscar_stripe_sca.facade import Facade
 from . import PAYMENT_METHOD_STRIPE, PAYMENT_EVENT_PURCHASE
 
@@ -44,7 +45,7 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
 
 class StripeSCASuccessResponseView(CorePaymentDetailsView):
     preview = True
-    template_name_preview = 'checkout/stripe_preview.html'
+    template_name_preview = 'oscar/checkout/stripe_preview.html'
 
     @property
     def pre_conditions(self):
@@ -56,9 +57,13 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
 
     def get_context_data(self, **kwargs):
         ctx = super(StripeSCASuccessResponseView, self).get_context_data(**kwargs)
-        ctx['order_total_incl_tax_cents'] = (
-            ctx['order_total'].incl_tax * 100
-        ).to_integral_value()
+        if ctx['order_total'] is None:
+            messages.error(self.request, "Your checkout session has expired, please try again")
+            raise PermissionDenied
+        else:
+            ctx['order_total_incl_tax_cents'] = (
+                ctx['order_total'].incl_tax * 100
+            ).to_integral_value()
         return ctx
 
     def handle_payment(self, order_number, order_total, **kwargs):
