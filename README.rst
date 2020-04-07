@@ -3,7 +3,8 @@ Stripe integration for django-oscar
 ===================================
 
 This is a framework for using Stripe Checkout with a view for being SCA compliant for payments
-in Europe after September 2019.  Requires the lastest version of the Python Stripe API (2.27)
+in Europe after September 2019.  Requires the Python Stripe API (2.27). 
+Based in part on django-oscar-stripe and django-oscar-paypal.
 
 Useful information:
 
@@ -14,11 +15,11 @@ Useful information:
 Contributing
 ============
 
-Please do.
+Please do.  Let me know.
 
 TODO
 ====
 
-It's very crude at the moment, and hasn't been used in a standalone environment.
-A lot of the code has been taken from django-oscar-paypal as the logic is now similar.
+The sandbox and the tests have not been updated yet.
+
 
