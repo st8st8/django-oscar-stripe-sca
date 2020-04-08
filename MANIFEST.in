@@ -1,0 +1,6 @@
+include README.rst
+include LICENSE
+include runtests.py
+include requirements.txt
+recursive-include sandbox *.html
+recursive-include sandbox *.py
