@@ -23,13 +23,13 @@ Settings
 ========
 Settings are described in the settings.py file:
 
-STRIPE_SEND_RECEIPT: (True/False) - whether to send the payment receipt to the purchaser
-STRIPE_CURRENCY: Three letter currency code for the transaction
-STRIPE_PUBLISHABLE_KEY: Your key from Stripe
-STRIPE_SECRET_KEY: Your secret key from Stripe
-STRIPE_RETURN_URL_BASE: Not used itself.  It's just the common portion of the URL parts of....
-STRIPE_PAYMENT_SUCCESS_URL: The URL to which Stripe should redirect upon payment success
-STRIPE_PAYMENT_CANCEL_URL: The URL to which Stripe should redirect upon payment cancel.
+ - STRIPE_SEND_RECEIPT: (True/False) - whether to send the payment receipt to the purchaser
+ - STRIPE_CURRENCY: Three letter currency code for the transaction
+ - STRIPE_PUBLISHABLE_KEY: Your key from Stripe
+ - STRIPE_SECRET_KEY: Your secret key from Stripe
+ - STRIPE_RETURN_URL_BASE: Not used itself.  It's just the common portion of the URL parts of....
+ - STRIPE_PAYMENT_SUCCESS_URL: The URL to which Stripe should redirect upon payment success
+ - STRIPE_PAYMENT_CANCEL_URL: The URL to which Stripe should redirect upon payment cancel.
 
 TODO
 ====
