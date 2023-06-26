@@ -27,31 +27,24 @@ Settings are described in the settings.py file:
  - STRIPE_CURRENCY: Three letter currency code for the transaction
  - STRIPE_PUBLISHABLE_KEY: Your key from Stripe
  - STRIPE_SECRET_KEY: Your secret key from Stripe
- - STRIPE_RETURN_URL_BASE: Not used itself.  It's just the common portion of the URL parts of....
- - STRIPE_PAYMENT_SUCCESS_URL: The URL to which Stripe should redirect upon payment success
+ - STRIPE_RETURN_URL_BASE: The common portion of the URL parts of the following two URLs.  Not used itself.
+ - STRIPE_PAYMENT_SUCCESS_URL: The URL to which Stripe should redirect upon payment success.
  - STRIPE_PAYMENT_CANCEL_URL: The URL to which Stripe should redirect upon payment cancel.
 
 Views
 =====
-Currently no urls.py file is provided. Three views are provided in the views.py file.  You can either point URLs to these in your urls.py file, or extend these views in your own checkout app.  This is the approach that I have used:
-
-
-    class MyShopStripeSCAPaymentDetailsView(stripe_sca_views.StripeSCAPaymentDetailsView):
-        pass
-
-    class MyShopStripeSCASuccessResponseView(stripe_sca_views.StripeSCASuccessResponseView):
-        pass
-
-    class MyShopStripeSCACancelView(stripe_sca_views.StripeSCACancelResponseView):
-        pass
-
+Three urls are provided in apps.py. Three views are provided in the views.py file. 
+ - StripeSCAPaymentDetailsView:  This sets up the variables which will be sent to Stripe and renders a templates which injects those variables and redirects to Stripe. Payment will be taken by Stripe as a "Charge" step.
+ - StripeSCASuccessResponseView:  This is a form view that is loaded after a successful payment.  The "Place order" button is a form which ultimately tells Stripe to "capture" the payment.
+ - StripeSCACancelResponseView:  This is the view that will be shown if the user cancels the payment for any reason.
 
 The latter two views should be the views to which STRIPE_PAYMENT_SUCCESS_URL and STRIPE_PAYMENT_CANCEL_URL refer.
 
+If you want to extend these views you can.  Extend Oscar's checkout app, add three new views to extend these ones, and overwrite the URLs in your checkout apps apps.py file.
+
+
 TODO
 ====
-
  - The sandbox and the tests have not been updated yet.
- - Remove all Python 2 artefacts
-
+ - The STRIPE_PAYMENT_SUCCESS_URL and STRIPE_PAYMENT_CANCEL_URL settings could probably be removed
 
