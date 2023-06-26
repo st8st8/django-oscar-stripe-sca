@@ -13,11 +13,11 @@ class StripeSCACheckoutConfig(CheckoutConfig):
     def get_urls(self):
         urls = super(StripeSCACheckoutConfig, self).get_urls()
         urls += [
-            path(r'payment-details-stripe/',
+            path('payment-details-stripe/',
                 self.stripe_payment_details_view.as_view(), name='stripe-payment-details'),
-            path(r'preview-stripe/<int:basket_id>/',
+            path('preview-stripe/<int:basket_id>/',
                 self.stripe_success_view.as_view(preview=True), name='stripe-preview'),
-            path(r'payment-cancel/<int:basket_id>/',
+            path('payment-cancel/<int:basket_id>/',
                 self.stripe_cancel_view.as_view(), name='stripe-cancel'),
         ]
         return urls
