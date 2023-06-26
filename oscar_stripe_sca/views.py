@@ -11,7 +11,7 @@ from oscar.apps.checkout.views import PaymentDetailsView as CorePaymentDetailsVi
 from oscar.core.exceptions import ModuleNotFoundError
 from oscar.core.loading import get_class, get_model
 from oscar_stripe_sca.facade import logger
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib import messages
 from oscar_stripe_sca.facade import Facade
 from . import PAYMENT_METHOD_STRIPE, PAYMENT_EVENT_PURCHASE

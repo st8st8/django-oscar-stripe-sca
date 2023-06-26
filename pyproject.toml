@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-oscar-stripe-sca"
-version = "0.1"
+version = "0.2"
 description = "Stripe Checkout (with Payment Intents) payment module for django-oscar"
 keywords = [ "Payment", "Stripe",]
 readme = "README.rst"
