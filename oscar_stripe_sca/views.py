@@ -29,7 +29,7 @@ except ModuleNotFoundError:
 
 
 class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
-    template_name = "oscar/checkout/stripe_payment_details.html"
+    template_name = "oscar_stripe_sca/stripe_payment_details.html"
 
     def get_context_data(self, **kwargs):
         ctx = super(StripeSCAPaymentDetailsView, self).get_context_data(**kwargs)
@@ -45,7 +45,7 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
 
 class StripeSCASuccessResponseView(CorePaymentDetailsView):
     preview = True
-    template_name_preview = 'oscar/checkout/stripe_preview.html'
+    template_name_preview = 'oscar_stripe_sca/stripe_preview.html'
 
     @property
     def pre_conditions(self):
