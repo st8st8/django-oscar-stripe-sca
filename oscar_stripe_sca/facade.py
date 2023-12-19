@@ -33,6 +33,7 @@ ZERO_DECIMAL_CURRENCIES = (
 class Facade(object):
     def __init__(self):
         stripe.api_key = settings.STRIPE_SECRET_KEY
+        stripe.api_version = "2020-03-02"
 
     @staticmethod
     def get_friendly_decline_message(error):
