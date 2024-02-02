@@ -78,6 +78,6 @@ Run the migrations and start the server:
 
 TODO
 ====
- - The sandbox and the tests have not been updated yet.
+ - The tests have not been updated yet.
  - The STRIPE_PAYMENT_SUCCESS_URL and STRIPE_PAYMENT_CANCEL_URL settings could probably be removed
 
