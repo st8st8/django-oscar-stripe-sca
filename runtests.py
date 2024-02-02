@@ -5,6 +5,7 @@ from optparse import OptionParser
 
 from django.conf import settings
 
+raise NotImplementedError("I've not looked at these yet.")
 
 if not settings.configured:
     settings.configure(

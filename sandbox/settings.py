@@ -11,7 +11,9 @@ SQL_DEBUG = True
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(PROJECT_DIR, "emails")
 
 MANAGERS = ADMINS
 
@@ -19,24 +21,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': location('db.sqlite'),                      # Or path to database file if using sqlite3.
+        'ATOMIC_REQUESTS': True,
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
-import django
-django16 = django.VERSION[1] >= 6
-if django16:
-    DATABASES['default']['ATOMIC_REQUESTS'] = True
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# On Unix systems, a value of None will cause Django to use the same
-# timezone as the operating system.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
 TIME_ZONE = 'Europe/London'
 
 # Language code for this installation. All choices can be found here:
@@ -69,67 +61,57 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (location('static/'),)
-STATIC_ROOT = location('public/static')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '$)a7n&o80u!6y5t-+jrd3)3!%vh&shg$wqpjpxc!ar&p#!)n1a'
+SECRET_KEY = '!8(8ijbn^rd%y%ckok%ju_tce+g)iv09vog*ut#9^5-9uc&rhs'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.Loader',
-)
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.request",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.contrib.messages.context_processors.messages",
-    # Oscar specific
-    'oscar.apps.search.context_processors.search_form',
-    'oscar.apps.promotions.context_processors.promotions',
-    'oscar.apps.checkout.context_processors.checkout',
-    'oscar.core.context_processors.metadata',
-)
-
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'oscar.apps.basket.middleware.BasketMiddleware',
 ]
-if not django16:
-    MIDDLEWARE_CLASSES.append('django.middleware.transaction.TransactionMiddleware')
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 INTERNAL_IPS = ('127.0.0.1',)
 
 ROOT_URLCONF = 'urls'
 
-from oscar import OSCAR_MAIN_TEMPLATE_DIR
-TEMPLATE_DIRS = (
-    location('templates'),
-    OSCAR_MAIN_TEMPLATE_DIR,
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(PROJECT_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.request",
+                "django.template.context_processors.debug",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.contrib.messages.context_processors.messages",
+                # Oscar specific
+                'oscar.apps.search.context_processors.search_form',
+                'oscar.apps.checkout.context_processors.checkout',
+                'oscar.apps.communication.notifications.context_processors.notifications',
+                'oscar.core.context_processors.metadata',
+            ]
+        }
+    }
+]
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -143,18 +125,18 @@ LOGGING = {
     },
     'handlers': {
         'null': {
-            'level':'DEBUG',
-            'class':'logging.NullHandler',
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
         },
-        'console':{
-            'level':'DEBUG',
-            'class':'logging.StreamHandler',
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
         'oscar_stripe_file': {
              'level': 'DEBUG',
              'class': 'logging.FileHandler',
-             'filename': '/tmp/oscar_stripe.log',
+             'filename': os.path.join(PROJECT_DIR, 'logs', 'oscar_stripe_sca.log'),
              'formatter': 'verbose'
         },
         'mail_admins': {
@@ -164,7 +146,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers':['null'],
+            'handlers': ['null'],
             'propagate': True,
             'level':'INFO',
         },
@@ -176,17 +158,17 @@ LOGGING = {
         'oscar.checkout': {
             'handlers': ['console'],
             'propagate': True,
-            'level':'INFO',
+            'level': 'INFO',
         },
         'django.db.backends': {
-            'handlers':['null'],
+            'handlers': ['null'],
             'propagate': False,
-            'level':'DEBUG',
+            'level': 'DEBUG',
         },
-        'oscar_stripe': {
+        'oscar_stripe_sca': {
             'handlers': ['console', 'oscar_stripe_file'],
             'propagate': True,
-            'level':'DEBUG',
+            'level': 'DEBUG',
         },
     }
 }
@@ -201,53 +183,77 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.flatpages',
     'django.contrib.staticfiles',
-    # External apps
-    'django_extensions',
-    'debug_toolbar',
-    #'haystack',
-    #'sorl.thumbnail',
-    'oscar_stripe',
-    'compressor',
-    #'south',
     'widget_tweaks',
+    'django_tables2',
+    'sorl.thumbnail',
+    'oscar.config.Shop',
+    'oscar.apps.address.apps.AddressConfig',
+
+    'apps.checkout.apps.StripeSCASandboxCheckoutConfig',
+
+    'oscar.apps.dashboard.apps.DashboardConfig',
+    'oscar.apps.partner.apps.PartnerConfig',
+    'oscar.apps.basket.apps.BasketConfig',
+    'oscar.apps.order.apps.OrderConfig',
+    'oscar.apps.customer.apps.CustomerConfig',
+    'oscar.apps.shipping.apps.ShippingConfig',
+    'oscar.apps.dashboard.reports.apps.ReportsDashboardConfig',
+    'oscar.apps.analytics.apps.AnalyticsConfig',
+    'oscar.apps.catalogue.apps.CatalogueConfig',
+    'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
+    'oscar.apps.communication.apps.CommunicationConfig',
+    'oscar.apps.payment.apps.PaymentConfig',
+    'oscar.apps.offer.apps.OfferConfig',
+    'oscar.apps.search.apps.SearchConfig',
+    'oscar.apps.voucher.apps.VoucherConfig',
+    'oscar.apps.wishlists.apps.WishlistsConfig',
+    'oscar.apps.dashboard.users.apps.UsersDashboardConfig',
+    'oscar.apps.dashboard.orders.apps.OrdersDashboardConfig',
+    'oscar.apps.dashboard.catalogue.apps.CatalogueDashboardConfig',
+    'oscar.apps.dashboard.offers.apps.OffersDashboardConfig',
+    'oscar.apps.dashboard.partners.apps.PartnersDashboardConfig',
+    'oscar.apps.dashboard.pages.apps.PagesDashboardConfig',
+    'oscar.apps.dashboard.ranges.apps.RangesDashboardConfig',
+    'oscar.apps.dashboard.reviews.apps.ReviewsDashboardConfig',
+    'oscar.apps.dashboard.vouchers.apps.VouchersDashboardConfig',
+    'oscar.apps.dashboard.communications.apps.CommunicationsDashboardConfig',
+    'oscar.apps.dashboard.shipping.apps.ShippingDashboardConfig',
+    'oscar_stripe_sca',
 ]
-from oscar import get_core_apps
-INSTALLED_APPS += get_core_apps()
 
 AUTHENTICATION_BACKENDS = (
-    'oscar.apps.customer.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 LOGIN_REDIRECT_URL = '/accounts/'
 APPEND_SLASH = True
 
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False
-}
-
-# Oscar settings
-from oscar.defaults import *
-OSCAR_ALLOW_ANON_CHECKOUT = True
-
-# Haystack settings
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
 }
 
-OSCAR_SHOP_TAGLINE = 'Stripe sandbox'
+# =================
+# Oscar settings
+# =================
+from oscar.defaults import *
 
-COMPRESS_ENABLED = False
-COMPRESS_PRECOMPILERS = (
-    ('text/less', 'lessc {infile} {outfile}'),
-)
+OSCAR_ALLOW_ANON_CHECKOUT = True
+
 
 # =================
 # Stripe settings
 # =================
-STRIPE_SECRET_KEY = 'sk_test_iyXSkU6XayNItIIhF8rdrqm0'
-STRIPE_PUBLISHABLE_KEY = 'pk_test_LAIdr6RxwTeebDA7OBDTgHao'
-STRIPE_CURRENCY = 'USD'
+STRIPE_CURRENCY = "GBP"
+STRIPE_CHARGE_AND_CAPTURE_IN_ONE_STEP = True
 
+# Override these three:
+STRIPE_PUBLISHABLE_KEY = "YOUR-STRIPE-PUBLISHABLE-KEY"
+STRIPE_SECRET_KEY = "YOUR-STRIPE-SECRET-KEY"
+STRIPE_RETURN_URL_BASE = "https://www.example.com/"
+
+from settings_local import *
+
+STRIPE_PAYMENT_SUCCESS_URL = "{0}{1}".format(STRIPE_RETURN_URL_BASE, "/checkout/preview-stripe/{0}/")
+STRIPE_PAYMENT_CANCEL_URL = "{0}{1}".format(STRIPE_RETURN_URL_BASE, "/checkout/stripe-payment-cancel/{0}/")

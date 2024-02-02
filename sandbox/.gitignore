@@ -1,0 +1,4 @@
+venv/
+sandbox/settings_local.py
+sandbox/emails/*
+sandbox/logs/*

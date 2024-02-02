@@ -42,6 +42,39 @@ The latter two views should be the views to which STRIPE_PAYMENT_SUCCESS_URL and
 
 If you want to extend these views you can.  Extend Oscar's checkout app, add three new views to extend these ones, and overwrite the URLs in your checkout apps apps.py file.
 
+===================================
+Sandbox for the Stripe SCA integration for django-oscar
+===================================
+
+To get started with the sandbox (on Windows):
+
+Create a venv.
+
+.. code-block::
+
+    >python -m venv .\venv
+
+
+Activate the venv.
+
+.. code-block::
+
+    >.\venv\Scripts\activate
+
+Install the dependencies, then Oscar Stripe SCA
+
+.. code-block::
+
+    >pip install -r requirements.txt
+    >pip install .
+
+Run the migrations and start the server:
+
+.. code-block::
+
+    >cd sandbox
+    >python manage.py migrate
+    >python manage.py runserver
 
 TODO
 ====
