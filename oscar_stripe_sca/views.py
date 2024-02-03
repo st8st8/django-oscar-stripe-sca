@@ -33,7 +33,14 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
 
     def get_context_data(self, **kwargs):
         ctx = super(StripeSCAPaymentDetailsView, self).get_context_data(**kwargs)
+        customer_email = None
+        try:
+            customer_email = ctx["basket"].owner.email
+        except AttributeError:
+            checkout_data = self.request.session[self.checkout_session.SESSION_KEY]
+            customer_email = checkout_data["guest"]["email"]
         stripe_session = Facade().begin(
+            customer_email,
             ctx["basket"],
             ctx["order_total"])
         self.request.session["stripe_session_id"] = stripe_session.id

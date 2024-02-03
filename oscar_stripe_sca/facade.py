@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.urls import reverse
@@ -5,6 +7,8 @@ from django.utils import timezone
 import stripe
 from django.apps import apps
 import logging
+
+from oscar_stripe_sca import utils
 
 logger = logging.getLogger(__name__)
 Source = apps.get_model('payment', 'Source')
@@ -43,7 +47,7 @@ class Facade(object):
     def get_friendly_error_message(error):
         return 'An error occurred when communicating with the payment gateway.'
 
-    def begin(self, basket, total):
+    def begin(self, customer_email, basket, total):
         multiplier = 1
         if total.currency.upper() in ZERO_DECIMAL_CURRENCIES:
             multiplier = 1
@@ -52,15 +56,30 @@ class Facade(object):
 
         site = Site.objects.get_current()
         line_items_summary = ", ".join(["{0}x{1}".format(l.quantity, l.product.title) for l in basket.lines.all()])
-        line_items = [{
+
+        if (utils.get_stripe_api_version_as_date(stripe) <
+                datetime.datetime.strptime("2022-08-01", "%Y-%m-%d")):
+            line_items = [{
                 "name": line_items_summary,
                 "amount": int(multiplier * total.incl_tax),
                 "currency": total.currency,
                 "quantity": 1,
-        }]
+            }]
+        else:
+            line_items = [{
+                "price_data":  {
+                    "product_data": {
+                        "name": line_items_summary,
+                    },
+                    "currency": total.currency,
+                    "unit_amount": int(multiplier * total.incl_tax),
+                },
+                "quantity": 1,
+            }]
+
         basket.freeze()
         session = stripe.checkout.Session.create(
-            customer_email=basket.owner.email,
+            customer_email=customer_email,
             payment_method_types=['card'],
             line_items=line_items,
             success_url=settings.STRIPE_PAYMENT_SUCCESS_URL.format(basket.id),

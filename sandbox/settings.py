@@ -223,6 +223,7 @@ INSTALLED_APPS = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+    'oscar.apps.customer.auth_backends.EmailBackend'
 )
 
 LOGIN_REDIRECT_URL = '/accounts/'
