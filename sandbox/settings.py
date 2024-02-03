@@ -248,11 +248,13 @@ OSCAR_ALLOW_ANON_CHECKOUT = True
 STRIPE_CURRENCY = "GBP"
 STRIPE_CHARGE_AND_CAPTURE_IN_ONE_STEP = True
 
-# Override these three:
+# Override these three.  I suggest creating a file called "settings_local.py", and adding the settings there.
+# This file is .gitignore-d so this will avoid your stripe keys going into git.
 STRIPE_PUBLISHABLE_KEY = "YOUR-STRIPE-PUBLISHABLE-KEY"
 STRIPE_SECRET_KEY = "YOUR-STRIPE-SECRET-KEY"
 STRIPE_RETURN_URL_BASE = "https://www.example.com/"
 
+# If you don't want to use a settings_local.py, comment or remove this line.
 from settings_local import *
 
 STRIPE_PAYMENT_SUCCESS_URL = "{0}{1}".format(STRIPE_RETURN_URL_BASE, "/checkout/preview-stripe/{0}/")

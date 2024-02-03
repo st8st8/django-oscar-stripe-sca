@@ -68,6 +68,14 @@ Install the dependencies, then Oscar Stripe SCA
     >pip install -r requirements.txt
     >pip install .
 
+
+Create a file called "settings_local.py" next to "settings.py" and add the following three keys to override the examples given in "settings.py".  These will be the values for your shop and site integration.
+
+.. code-block::
+	STRIPE_PUBLISHABLE_KEY = "XXX"
+ 	STRIPE_SECRET_KEY = "YYY"
+ 	STRIPE_RETURN_URL_BASE = "https://www.zzz.com"
+
 Run the migrations and start the server:
 
 .. code-block::
