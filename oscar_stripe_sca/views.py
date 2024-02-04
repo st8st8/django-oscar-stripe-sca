@@ -81,7 +81,7 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
         source_type, __ = SourceType.objects.get_or_create(name=PAYMENT_METHOD_STRIPE)
         source = Source(
             source_type=source_type,
-            currency=settings.STRIPE_CURRENCY,
+            currency=order_total.currency,
             amount_allocated=order_total.incl_tax,
             amount_debited=order_total.incl_tax,
             reference=pi)

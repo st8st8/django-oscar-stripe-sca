@@ -23,13 +23,12 @@ Settings
 ========
 Settings are described in the settings.py file:
 
- - STRIPE_SEND_RECEIPT: (True/False) - whether to send the payment receipt to the purchaser
- - STRIPE_CURRENCY: Three letter currency code for the transaction
- - STRIPE_PUBLISHABLE_KEY: Your key from Stripe
- - STRIPE_SECRET_KEY: Your secret key from Stripe
- - STRIPE_COMPRESS_TO_ONE_LINE_ITEM (default True): If True, send the order to stripe as one combined line item, instead of one for each product
+ - STRIPE_SEND_RECEIPT: (True/False) - whether to send the payment receipt to the purchaser.
+ - STRIPE_PUBLISHABLE_KEY: Your key from Stripe.
+ - STRIPE_SECRET_KEY: Your secret key from Stripe.
+ - STRIPE_COMPRESS_TO_ONE_LINE_ITEM (default True): If True, send the order to stripe as one combined line item, instead of one for each product.
  - STRIPE_USE_PRICES_API (default True): Use Stripe's Prices API to send line items, rather than the defunct line_item object.
-   (See https://stripe.com/docs/payments/checkout/migrating-prices)
+   (See https://stripe.com/docs/payments/checkout/migrating-prices).
  - STRIPE_RETURN_URL_BASE: The common portion of the URL parts of the following two URLs.  Not used itself.
  - STRIPE_PAYMENT_SUCCESS_URL: The URL to which Stripe should redirect upon payment success.
  - STRIPE_PAYMENT_CANCEL_URL: The URL to which Stripe should redirect upon payment cancel.

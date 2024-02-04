@@ -246,7 +246,6 @@ OSCAR_ALLOW_ANON_CHECKOUT = True
 # =================
 # Stripe settings
 # =================
-STRIPE_CURRENCY = "GBP"
 STRIPE_COMPRESS_TO_ONE_LINE_ITEM = False
 STRIPE_USE_PRICES_API = True
 
