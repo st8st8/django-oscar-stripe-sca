@@ -1,12 +1,10 @@
 import datetime
+import logging
 
-from django.conf import settings
-from django.contrib.sites.models import Site
-from django.urls import reverse
-from django.utils import timezone
 import stripe
 from django.apps import apps
-import logging
+from django.conf import settings
+from django.utils import timezone
 
 from oscar_stripe_sca import utils
 
@@ -54,31 +52,53 @@ class Facade(object):
         else:
             multiplier = 100
 
-        site = Site.objects.get_current()
-        line_items_summary = ", ".join(["{0}x{1}".format(l.quantity, l.product.title) for l in basket.lines.all()])
-
-        if (utils.get_stripe_api_version_as_date(stripe) <
-                datetime.datetime.strptime("2022-08-01", "%Y-%m-%d")):
-            line_items = [{
-                "name": line_items_summary,
-                "amount": int(multiplier * total.incl_tax),
-                "currency": total.currency,
-                "quantity": 1,
-            }]
-        else:
-            line_items = [{
-                "price_data":  {
-                    "product_data": {
-                        "name": line_items_summary,
-                    },
+        # Four cases here.  Two versions of the Stripe API, and whether we want to compress the line items or not.
+        if settings.STRIPE_COMPRESS_TO_ONE_LINE_ITEM:
+            line_items_summary = ", ".join(["{0}x{1}".format(l.quantity, l.product.title) for l in basket.lines.all()])
+            if not settings.STRIPE_USE_PRICES_API:
+                line_items = [{
+                    "name": line_items_summary,
+                    "amount": int(multiplier * total.incl_tax),
                     "currency": total.currency,
-                    "unit_amount": int(multiplier * total.incl_tax),
-                },
-                "quantity": 1,
-            }]
+                    "quantity": 1,
+                }]
+            else:
+                line_items = [{
+                    "price_data":  {
+                        "product_data": {
+                            "name": line_items_summary,
+                        },
+                        "currency": total.currency,
+                        "unit_amount": int(multiplier * total.incl_tax),
+                    },
+                    "quantity": 1,
+                }]
+        else:
+            line_items = []
+            if not settings.STRIPE_USE_PRICES_API:
+                for line_item in basket.lines.all():
+                    line_items.append({
+                        "name": line_item.product.title,
+                        "amount": int(multiplier * line_item.price_incl_tax),
+                        "currency": line_item.price_currency,
+                        "quantity": line_item.quantity
+                    })
+            else:
+                for line_item in basket.lines.all():
+                    line_items.append({
+                        "price_data":  {
+                            "product_data": {
+                                "name": line_item.product.title,
+                            },
+                            "currency": line_item.price_currency,
+                            "unit_amount": int(multiplier * line_item.price_incl_tax),
+                        },
+                        "quantity": line_item.quantity,
+                    })
 
         basket.freeze()
         session = stripe.checkout.Session.create(
+            mode="payment",
             customer_email=customer_email,
             payment_method_types=['card'],
             line_items=line_items,

@@ -247,7 +247,8 @@ OSCAR_ALLOW_ANON_CHECKOUT = True
 # Stripe settings
 # =================
 STRIPE_CURRENCY = "GBP"
-STRIPE_CHARGE_AND_CAPTURE_IN_ONE_STEP = True
+STRIPE_COMPRESS_TO_ONE_LINE_ITEM = False
+STRIPE_USE_PRICES_API = True
 
 # Override these three.  I suggest creating a file called "settings_local.py", and adding the settings there.
 # This file is .gitignore-d so this will avoid your stripe keys going into git.
