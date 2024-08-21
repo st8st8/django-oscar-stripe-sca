@@ -42,3 +42,6 @@ sandbox/*.sqlite
 /sandbox/whoosh_index/
 /sandbox/emails/
 /sandbox/logs/
+
+# Env
+env
