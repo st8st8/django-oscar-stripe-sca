@@ -32,6 +32,13 @@ ZERO_DECIMAL_CURRENCIES = (
 )
 
 
+class PaymentItem:
+    def __init__(self, **kwargs):
+        self.quantity = kwargs.get('quantity')
+        self.title = kwargs.get('title')
+        self.price_incl_tax = kwargs.get('price_incl_tax')
+        self.price_currency = kwargs.get('price_currency')
+
 class Facade(object):
     def __init__(self):
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -45,16 +52,38 @@ class Facade(object):
     def get_friendly_error_message(error):
         return 'An error occurred when communicating with the payment gateway.'
 
-    def begin(self, customer_email, basket, total):
+    def begin(self, customer_email, basket, total, shipping_method):
         multiplier = 1
         if total.currency.upper() in ZERO_DECIMAL_CURRENCIES:
             multiplier = 1
         else:
             multiplier = 100
 
+        all_line_items = []
+        for line in basket.lines.all():
+            all_line_items.append(
+                PaymentItem(
+                    quantity=line.quantity,
+                    title=line.product.title,
+                    price_incl_tax=line.price_incl_tax,
+                    price_currency=line.price_currency
+                )
+            )
+
+        if basket.is_shipping_required() and shipping_method:
+            price = shipping_method.calculate(basket)
+            all_line_items.append(
+                PaymentItem(
+                    quantity=1,
+                    title=shipping_method.name,
+                    price_incl_tax=price.incl_tax,
+                    price_currency=price.currency
+                )
+            )
+
         # Four cases here.  Two versions of the Stripe API, and whether we want to compress the line items or not.
         if settings.STRIPE_COMPRESS_TO_ONE_LINE_ITEM:
-            line_items_summary = ", ".join(["{0}x{1}".format(l.quantity, l.product.title) for l in basket.lines.all()])
+            line_items_summary = ", ".join(["{0}x{1}".format(l.quantity, l.title) for l in all_line_items])
             if not settings.STRIPE_USE_PRICES_API:
                 line_items = [{
                     "name": line_items_summary,
@@ -76,19 +105,19 @@ class Facade(object):
         else:
             line_items = []
             if not settings.STRIPE_USE_PRICES_API:
-                for line_item in basket.lines.all():
+                for line_item in all_line_items:
                     line_items.append({
-                        "name": line_item.product.title,
+                        "name": line_item.title,
                         "amount": int(multiplier * line_item.price_incl_tax),
                         "currency": line_item.price_currency,
                         "quantity": line_item.quantity
                     })
             else:
-                for line_item in basket.lines.all():
+                for line_item in all_line_items:
                     line_items.append({
                         "price_data":  {
                             "product_data": {
-                                "name": line_item.product.title,
+                                "name": line_item.title,
                             },
                             "currency": line_item.price_currency,
                             "unit_amount": int(multiplier * line_item.price_incl_tax),

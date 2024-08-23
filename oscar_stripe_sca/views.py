@@ -42,7 +42,8 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
         stripe_session = Facade().begin(
             customer_email,
             ctx["basket"],
-            ctx["order_total"])
+            ctx["order_total"],
+            ctx["shipping_method"])
         self.request.session["stripe_session_id"] = stripe_session.id
         self.request.session["stripe_payment_intent_id"] = stripe_session.payment_intent
         ctx['stripe_publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
