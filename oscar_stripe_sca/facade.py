@@ -5,6 +5,7 @@ import stripe
 from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
+from decimal import Decimal as D
 
 from oscar_stripe_sca import utils
 
@@ -59,16 +60,26 @@ class Facade(object):
         else:
             multiplier = 100
 
+        metadata = {
+            "discounts": "",
+        }
+
+        for voucher in basket.grouped_voucher_discounts:
+            metadata['discounts'] += "{0} ({1}), ".format(voucher['voucher'].name, voucher['discount'])
+
         all_line_items = []
-        for line in basket.lines.all():
-            all_line_items.append(
-                PaymentItem(
-                    quantity=line.quantity,
-                    title=line.product.title,
-                    price_incl_tax=line.price_incl_tax,
-                    price_currency=line.price_currency
+        for line in basket.all_lines():
+            # this loop will split line into discounted and non-discounted lines
+            for prices in line.get_price_breakdown():
+                price_incl_tax, _, quantity = prices
+                all_line_items.append(
+                    PaymentItem(
+                        quantity=quantity,
+                        title=line.product.title,
+                        price_incl_tax=price_incl_tax,
+                        price_currency=line.price_currency
+                    )
                 )
-            )
 
         if basket.is_shipping_required() and shipping_method:
             price = shipping_method.calculate(basket)
@@ -131,6 +142,7 @@ class Facade(object):
             customer_email=customer_email,
             payment_method_types=['card'],
             line_items=line_items,
+            metadata=metadata,
             success_url=settings.STRIPE_PAYMENT_SUCCESS_URL.format(basket.id),
             cancel_url=settings.STRIPE_PAYMENT_CANCEL_URL.format(basket.id),
             payment_intent_data={
