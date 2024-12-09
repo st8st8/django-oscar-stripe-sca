@@ -19,7 +19,7 @@
                     <div style="display:none">
                             {{ stripe_token_form.as_p }}
                     </div>
-                    <input id='place-order' type="submit" value="{% trans "Place order" %}" class="btn-block btn btn-primary btn-large js-disable-on-click" />
+                    <input id='place-order' type="submit" value="{% translate "Place order" %}" data-loading-text="Placing order..." class="btn-block btn btn-primary btn-large" />
                 </form>
             </div>
             <p>{{ order_total.incl_tax|currency }} will be debited from your bankcard.</p>
@@ -50,7 +50,7 @@
         <div class="form-actions clearfix">
             <div class="row">
                 <div class="col-xs-12 col-sm-6 col-md-3 col-sm-offset-6 col-md-offset-9">
-                     <button id='place-order' type="submit" class="btn btn-primary btn-large btn-block js-disable-on-click" data-loading-text="{% trans 'Submitting...' %}">{% trans "Place order" %}</button>
+                     <button id='place-order' type="submit" class="btn btn-primary btn-large btn-block" data-loading-text="{% translate 'Placing order...' %}">{% translate "Place order" %}</button>
                 </div>
             </div>
         </div>

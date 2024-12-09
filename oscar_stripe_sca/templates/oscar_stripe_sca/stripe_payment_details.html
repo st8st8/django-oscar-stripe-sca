@@ -2,7 +2,7 @@
 {% load i18n static %}
 {% load currency_filters %}
 
-{% block checkout_title %}{% trans "Checkout" %}{% endblock %}
+{% block checkout_title %}{% translate "Checkout" %}{% endblock %}
 
 {% block checkout_nav %}
     {% include 'oscar/checkout/nav.html' with step=3 %}
