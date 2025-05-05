@@ -23,7 +23,6 @@ Settings
 ========
 Settings are described in the settings.py file:
 
- - STRIPE_SEND_RECEIPT: (True/False) - whether to send the payment receipt to the purchaser.
  - STRIPE_PUBLISHABLE_KEY: Your key from Stripe.
  - STRIPE_SECRET_KEY: Your secret key from Stripe.
  - STRIPE_COMPRESS_TO_ONE_LINE_ITEM (default True): If True, send the order to stripe as one combined line item, instead of one for each product.
