@@ -1,9 +1,8 @@
 import datetime
 import logging
-
 import stripe
 from django.apps import apps
-from django.conf import settings
+from . import settings
 from django.utils import timezone
 from decimal import Decimal as D
 
@@ -41,9 +40,12 @@ class PaymentItem:
         self.price_currency = kwargs.get('price_currency')
 
 class Facade(object):
-    def __init__(self):
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        stripe.api_version = "2020-03-02"
+    stripe_client = None
+    def __init__(self, api_key, api_version):
+        self.stripe_client = stripe.StripeClient(
+            api_key=api_key,
+            stripe_version=api_version
+        )
 
     @staticmethod
     def get_friendly_decline_message(error):
@@ -54,6 +56,10 @@ class Facade(object):
         return 'An error occurred when communicating with the payment gateway.'
 
     def begin(self, customer_email, basket, total, shipping_method):
+        if not settings.STRIPE_PAYMENT_SUCCESS_URL:
+            raise AttributeError("The STRIPE_PAYMENT_SUCCESS_URL setting is required.")
+        if not settings.STRIPE_PAYMENT_CANCEL_URL:
+            raise AttributeError("The STRIPE_PAYMENT_CANCEL_URL setting is required.")
         multiplier = 1
         if total.currency.upper() in ZERO_DECIMAL_CURRENCIES:
             multiplier = 1
@@ -137,22 +143,28 @@ class Facade(object):
                     })
 
         basket.freeze()
-        session = stripe.checkout.Session.create(
-            mode="payment",
-            customer_email=customer_email,
-            payment_method_types=['card'],
-            line_items=line_items,
-            metadata=metadata,
-            success_url=settings.STRIPE_PAYMENT_SUCCESS_URL.format(basket.id),
-            cancel_url=settings.STRIPE_PAYMENT_CANCEL_URL.format(basket.id),
-            payment_intent_data={
-                'capture_method': 'manual',
-            },
+        session = self.stripe_client.checkout.sessions.create(
+            params = {
+                "mode": "payment",
+                "customer_email": customer_email,
+                "payment_method_types": ['card'],
+                "line_items": line_items,
+                "metadata": metadata,
+                "success_url": settings.STRIPE_PAYMENT_SUCCESS_URL.format(basket.id),
+                "cancel_url": settings.STRIPE_PAYMENT_CANCEL_URL.format(basket.id),
+                "payment_intent_data": {
+                    'capture_method': 'manual',
+                }
+            }
         )
         return session
+    
+    def retrieve(self, session_id):
+        return self.stripe_client.checkout.sessions.retrieve(session_id)
 
-    def retrieve_payment_intent(self, pi):
-        return stripe.PaymentIntent.retrieve(pi)
+    def retrieve_payment_intent(self, session_id):
+        session = self.retrieve(session_id)
+        return self.stripe_client.payment_intents.retrieve(session["payment_intent"])
 
     def capture(self, order_number, **kwargs):
         """
@@ -166,12 +178,14 @@ class Facade(object):
             # get charge_id from source
             charge_id = payment_source.reference
 
-            stripe.PaymentIntent.modify(
+            self.stripe_client.payment_intents.update(
                 charge_id,
-                receipt_email=order.user.email
+                params={
+                    "receipt_email": order.user.email
+                }
             )
 
-            stripe.PaymentIntent.capture(charge_id)
+            self.stripe_client.payment_intents.capture(charge_id)
             # set captured timestamp
             payment_source.date_captured = timezone.now()
             payment_source.save()

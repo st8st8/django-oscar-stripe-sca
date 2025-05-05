@@ -1,4 +1,4 @@
-from django.conf import settings
+from . import settings
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -39,13 +39,15 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
         except AttributeError:
             checkout_data = self.request.session[self.checkout_session.SESSION_KEY]
             customer_email = checkout_data["guest"]["email"]
-        stripe_session = Facade().begin(
+        stripe_session = Facade(
+            api_key=settings.STRIPE_SECRET_KEY,
+            api_version=settings.STRIPE_API_VERSION,
+        ).begin(
             customer_email,
             ctx["basket"],
             ctx["order_total"],
             ctx["shipping_method"])
         self.request.session["stripe_session_id"] = stripe_session.id
-        self.request.session["stripe_payment_intent_id"] = stripe_session.payment_intent
         ctx['stripe_publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
         ctx['stripe_session_id'] = stripe_session.id
         return ctx
@@ -75,8 +77,10 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
         return ctx
 
     def handle_payment(self, order_number, order_total, **kwargs):
-        pi = self.request.session["stripe_payment_intent_id"]
-        intent = Facade().retrieve_payment_intent(pi)
+        intent = Facade(
+            api_key=settings.STRIPE_SECRET_KEY,
+            api_version=settings.STRIPE_API_VERSION,
+        ).retrieve_payment_intent(self.request.session["stripe_session_id"])
         intent.capture()
 
         source_type, __ = SourceType.objects.get_or_create(name=PAYMENT_METHOD_STRIPE)
@@ -85,13 +89,12 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
             currency=order_total.currency,
             amount_allocated=order_total.incl_tax,
             amount_debited=order_total.incl_tax,
-            reference=pi)
+            reference=intent["id"])
         self.add_payment_source(source)
 
-        self.add_payment_event(PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=pi)
+        self.add_payment_event(PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=intent["id"])
 
         del self.request.session["stripe_session_id"]
-        del self.request.session["stripe_payment_intent_id"]
 
     def payment_description(self, order_number, total, **kwargs):
         return "Stripe payment for order {0} by {1}".format(order_number, self.request.user.get_full_name())
