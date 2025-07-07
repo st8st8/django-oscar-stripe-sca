@@ -138,6 +138,10 @@ class Facade(object):
                     })
 
         basket.freeze()
+
+        # TODO: Add a dedicated and overridable method here
+        # to allow personalization of the session parameters
+
         session = stripe.checkout.Session.create(
             mode="payment",
             customer_email=customer_email,
