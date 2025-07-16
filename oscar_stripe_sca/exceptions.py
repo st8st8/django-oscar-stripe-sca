@@ -1,0 +1,2 @@
+class MultipleTaxCodesInBasket(ValueError):
+    pass
