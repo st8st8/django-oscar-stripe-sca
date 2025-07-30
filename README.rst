@@ -1,4 +1,11 @@
 ===================================
+Note from Coracle
+===================================
+
+Fork of https://github.com/st8st8/django-oscar-stripe-sca which Steve does actually maintain a community version of.
+This was written from scratch by Steve once Stripe dramatically altered their payment system.
+
+===================================
 Stripe integration for django-oscar
 ===================================
 
