@@ -5,9 +5,9 @@ from django.urls import path
 
 class StripeSCACheckoutConfig(CheckoutConfig):
     def ready(self):
-        stripe_payment_details_view = get_class("oscar_stripe_sca.views", "StripeSCAPaymentDetailsView")
-        stripe_success_view = get_class("oscar_stripe_sca.views", "StripeSCASuccessResponseView")
-        stripe_cancel_view = get_class("oscar_stripe_sca.views", "StripeSCACancelResponseView")
+        self.stripe_payment_details_view = get_class("oscar_stripe_sca.views", "StripeSCAPaymentDetailsView")
+        self.stripe_success_view = get_class("oscar_stripe_sca.views", "StripeSCASuccessResponseView")
+        self.stripe_cancel_view = get_class("oscar_stripe_sca.views", "StripeSCACancelResponseView")
         super().ready()
 
     def get_urls(self):
@@ -22,3 +22,16 @@ class StripeSCACheckoutConfig(CheckoutConfig):
         ]
         return urls
     
+
+class MockStripeSCACheckoutConfig(StripeSCACheckoutConfig):
+    """Checkout app config that wires in mock Stripe views for tests."""
+
+    def ready(self):
+        super().ready()
+        from oscar_stripe_sca.testing import (
+            MockStripePaymentDetailsView,
+            MockStripeSuccessResponseView,
+        )
+
+        self.payment_details_view = MockStripePaymentDetailsView
+        self.stripe_success_view = MockStripeSuccessResponseView

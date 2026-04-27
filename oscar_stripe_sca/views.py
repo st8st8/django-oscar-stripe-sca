@@ -74,9 +74,13 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
             ).to_integral_value()
         return ctx
 
+    @property
+    def facade(self):
+        return Facade()
+
     def handle_payment(self, order_number, order_total, **kwargs):
         pi = self.request.session["stripe_payment_intent_id"]
-        intent = Facade().retrieve_payment_intent(pi)
+        intent = self.facade.retrieve_payment_intent(pi)
         intent.capture()
 
         source_type, __ = SourceType.objects.get_or_create(name=PAYMENT_METHOD_STRIPE)

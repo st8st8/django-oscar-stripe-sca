@@ -1,13 +1,11 @@
-import datetime
 import logging
 
 import stripe
 from django.apps import apps
 from django.conf import settings
 from django.utils import timezone
-from decimal import Decimal as D
+from decimal import Decimal as D, ROUND_HALF_UP
 
-from oscar_stripe_sca import utils
 
 logger = logging.getLogger(__name__)
 Source = apps.get_model('payment', 'Source')
@@ -53,13 +51,16 @@ class Facade(object):
     def get_friendly_error_message(error):
         return 'An error occurred when communicating with the payment gateway.'
 
-    def begin(self, customer_email, basket, total, shipping_method):
-        multiplier = 1
-        if total.currency.upper() in ZERO_DECIMAL_CURRENCIES:
-            multiplier = 1
+    def convert_to_cents(self, price, currency):
+        """
+        Convert price to cents with proper rounding, handling zero-decimal currencies.
+        """
+        if currency.upper() in ZERO_DECIMAL_CURRENCIES:
+            return int(D(str(price)).quantize(D('1'), ROUND_HALF_UP))
         else:
-            multiplier = 100
+            return int(D(str(price)).quantize(D('0.01'), ROUND_HALF_UP) * 100)
 
+    def begin(self, customer_email, basket, total, shipping_method):
         metadata = {
             "discounts": "",
         }
@@ -98,7 +99,7 @@ class Facade(object):
             if not settings.STRIPE_USE_PRICES_API:
                 line_items = [{
                     "name": line_items_summary,
-                    "amount": int(multiplier * total.incl_tax),
+                    "amount": self.convert_to_cents(total.incl_tax, total.currency),
                     "currency": total.currency,
                     "quantity": 1,
                 }]
@@ -109,7 +110,7 @@ class Facade(object):
                             "name": line_items_summary,
                         },
                         "currency": total.currency,
-                        "unit_amount": int(multiplier * total.incl_tax),
+                        "unit_amount": self.convert_to_cents(total.incl_tax, total.currency),
                     },
                     "quantity": 1,
                 }]
@@ -119,7 +120,7 @@ class Facade(object):
                 for line_item in all_line_items:
                     line_items.append({
                         "name": line_item.title,
-                        "amount": int(multiplier * line_item.price_incl_tax),
+                        "amount": self.convert_to_cents(line_item.price_incl_tax, line_item.price_currency),
                         "currency": line_item.price_currency,
                         "quantity": line_item.quantity
                     })
@@ -131,7 +132,7 @@ class Facade(object):
                                 "name": line_item.title,
                             },
                             "currency": line_item.price_currency,
-                            "unit_amount": int(multiplier * line_item.price_incl_tax),
+                            "unit_amount": self.convert_to_cents(line_item.price_incl_tax, line_item.price_currency),
                         },
                         "quantity": line_item.quantity,
                     })
