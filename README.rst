@@ -39,6 +39,13 @@ Session
 The browser can forget the session when handing over to Stripe.
 Make sure to [configure your session](https://docs.djangoproject.com/en/5.2/topics/http/sessions/). E.g. `cookie-based`
 
+Also, do not expire the session when the checkout replaces the shop:
+
+```python
+# settings.py
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+```
+
 API Key
 -------
 
