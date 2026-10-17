@@ -141,7 +141,6 @@ class Facade(object):
         session = stripe.checkout.Session.create(
             mode="payment",
             customer_email=customer_email,
-            allowed_payment_method_types=['card'],
             line_items=line_items,
             metadata=metadata,
             success_url=settings.STRIPE_PAYMENT_SUCCESS_URL.format(basket.id),
