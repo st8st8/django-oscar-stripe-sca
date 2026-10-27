@@ -43,7 +43,6 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
             customer_email, ctx["basket"], ctx["order_total"], ctx["shipping_method"]
         )
         self.request.session["stripe_session_id"] = stripe_session.id
-        self.request.session["stripe_payment_intent_id"] = stripe_session.payment_intent
         ctx["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
         ctx["stripe_session_id"] = stripe_session.id
         return ctx
@@ -79,8 +78,9 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
         return Facade()
 
     def handle_payment(self, order_number, order_total, **kwargs):
-        pi = self.request.session["stripe_payment_intent_id"]
-        intent = self.facade.retrieve_payment_intent(pi)
+        intent_id = self.facade.retrieve_payment_intent_id(self.request.session["stripe_session_id"])
+        # I wonder if there's a way to avoid the second hop to Stripe here....
+        intent = self.facade.retrieve_payment_intent(intent_id)
         intent.capture()
 
         source_type, __ = SourceType.objects.get_or_create(name=PAYMENT_METHOD_STRIPE)
@@ -89,16 +89,15 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
             currency=order_total.currency,
             amount_allocated=order_total.incl_tax,
             amount_debited=order_total.incl_tax,
-            reference=pi,
+            reference=intent_id,
         )
         self.add_payment_source(source)
 
         self.add_payment_event(
-            PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=pi
+            PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=intent_id
         )
 
         del self.request.session["stripe_session_id"]
-        del self.request.session["stripe_payment_intent_id"]
 
     def payment_description(self, order_number, total, **kwargs):
         return "Stripe payment for order {0} by {1}".format(

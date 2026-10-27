@@ -35,7 +35,6 @@ class MockStripePaymentDetailsView(CorePaymentDetailsView):
 
         # Store fake session keys so handle_payment() can read and delete them.
         request.session["stripe_session_id"] = "mock-session"
-        request.session["stripe_payment_intent_id"] = "mock-pi"
 
         if outcome == "cancel":
             return HttpResponseRedirect(
@@ -55,7 +54,7 @@ class MockIntent:
 
 
 class MockFacade:
-    def retrieve_payment_intent(self, _pi):
+    def retrieve_payment_intent(self, session_id):
         return MockIntent()
 
 

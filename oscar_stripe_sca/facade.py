@@ -179,43 +179,10 @@ class Facade:
         )
         return session
 
-    def retrieve_payment_intent(self, pi):
-        return stripe.PaymentIntent.retrieve(pi)
+    def retrieve_payment_intent_id(self, session_id):
+        session = stripe.checkout.Session.retrieve(session_id)
+        return session.payment_intent
 
-    def capture(self, order_number, **kwargs):
-        """
-        if capture is set to false in charge, the charge will only be pre-authorized
-        one need to use capture to actually charge the customer
-        """
-        logger.info(
-            "Initiating payment capture for order '{}' via stripe".format(order_number)
-        )
-        try:
-            order = Order.objects.get(number=order_number)
-            payment_source = Source.objects.get(order=order)
-            # get charge_id from source
-            charge_id = payment_source.reference
-
-            stripe.PaymentIntent.modify(charge_id, receipt_email=order.user.email)
-
-            stripe.PaymentIntent.capture(charge_id)
-            # set captured timestamp
-            payment_source.date_captured = timezone.now()
-            payment_source.save()
-            logger.info(
-                "payment for order '{}' (id:{}) was captured via stripe (stripe_ref:{})".format(
-                    order.number, order.id, charge_id
-                )
-            )
-        except Source.DoesNotExist:
-            logger.exception("Source rrror for order: '{}'".format(order_number))
-            raise Source.DoesNotExist(
-                "Capture failure could not find payment source for order {}".format(
-                    order_number
-                )
-            )
-        except Order.DoesNotExist:
-            logger.exception("Order Error for order: '{}'".format(order_number))
-            raise Order.DoesNotExist(
-                "Capture failure order {} does not exist".format(order_number)
-            )
+    def retrieve_payment_intent(self, payment_intent_id):
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        return payment_intent
