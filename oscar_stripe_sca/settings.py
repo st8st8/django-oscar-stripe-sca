@@ -1,5 +1,6 @@
 from django.conf import settings
 
+STRIPE_API_VERSION = getattr(settings, "STRIPE_API_VERSION", "2020-03-02")
 STRIPE_SEND_RECEIPT = getattr(settings, "STRIPE_SEND_RECEIPT", True)
 STRIPE_PUBLISHABLE_KEY = getattr(settings, "STRIPE_PUBLISHABLE_KEY", None)
 STRIPE_SECRET_KEY = getattr(settings, "STRIPE_SECRET_KEY", None)

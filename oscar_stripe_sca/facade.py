@@ -43,7 +43,7 @@ class PaymentItem:
 class Facade:
     def __init__(self):
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        stripe.api_version = "2020-03-02"
+        stripe.api_version = settings.STRIPE_API_VERSION
 
     @staticmethod
     def get_friendly_decline_message(error):
