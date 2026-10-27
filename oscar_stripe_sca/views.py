@@ -78,7 +78,9 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
         return Facade()
 
     def handle_payment(self, order_number, order_total, **kwargs):
-        intent_id = self.facade.retrieve_payment_intent_id(self.request.session["stripe_session_id"])
+        intent_id = self.facade.retrieve_payment_intent_id(
+            self.request.session["stripe_session_id"]
+        )
         # I wonder if there's a way to avoid the second hop to Stripe here....
         intent = self.facade.retrieve_payment_intent(intent_id)
         intent.capture()
