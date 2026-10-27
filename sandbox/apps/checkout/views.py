@@ -3,4 +3,3 @@ from oscar.apps.checkout.views import PaymentDetailsView as OscarPaymentDetailsV
 
 class StripeSCASandboxPaymentDetailsView(OscarPaymentDetailsView):
     pass
-

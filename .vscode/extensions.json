@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "biomejs.biome", // Biome - linter and formatter (for js, css, json)
+        "charliermarsh.ruff", // Python linter and autoformatter
+        "BlueGlassBlock.better-json5", // json5 formatter
+        "batisteo.vscode-django", // Django linter
+        "monosans.djlint", // Django template formatter
+        "ms-python.python", // VSCode Python
+        "ms-python.debugpy", // VSCode Python debugger
+    ]
+}

@@ -1,0 +1,53 @@
+{
+    "folders": [
+        {
+            "path": ".."
+        }
+    ],
+    "settings": {
+        "peacock.color": "#c31800",
+        "workbench.colorCustomizations": {
+            "activityBar.activeBackground": "#f61e00",
+            "activityBar.background": "#f61e00",
+            "activityBar.foreground": "#e7e7e7",
+            "activityBar.inactiveForeground": "#e7e7e799",
+            "activityBarBadge.background": "#00df1b",
+            "activityBarBadge.foreground": "#15202b",
+            "commandCenter.border": "#e7e7e799",
+            "sash.hoverBorder": "#f61e00",
+            "statusBar.background": "#c31800",
+            "statusBar.foreground": "#e7e7e7",
+            "statusBarItem.hoverBackground": "#f61e00",
+            "statusBarItem.remoteBackground": "#00bf18",
+            "statusBarItem.remoteForeground": "#e7e7e7",
+            "titleBar.activeBackground": "#c31800",
+            "titleBar.activeForeground": "#e7e7e7",
+            "titleBar.inactiveBackground": "#c3180099",
+            "titleBar.inactiveForeground": "#e7e7e799",
+            "activityBarTop.activeBackground": "#f61e00",
+            "activityBarTop.background": "#f61e00",
+            "activityBarTop.foreground": "#e7e7e7",
+            "activityBarTop.inactiveForeground": "#e7e7e799",
+            "commandCenter.foreground": "#e7e7e7",
+            "statusBar.debuggingBackground": "#c31800",
+            "statusBar.debuggingForeground": "#e7e7e7",
+            "activityBar.activeBorder": "#e7e7e7",
+            "activityBarTop.activeBorder": "#e7e7e7",
+            "statusBar.inactiveBackground": "#c31800"
+        },
+        "djlint.useEditorIndentation": false,
+        "python-envs.pythonProjects": [
+            {
+                "path": ".",
+                "envManager": "ms-python.python:venv",
+                "packageManager": "ms-python.python:pip"
+            },
+            {
+                "path": "osprey_vle_site/templates/mycoracle/brands",
+                "envManager": "ms-python.python:venv",
+                "packageManager": "ms-python.python:pip"
+            }
+        ],
+        "ruff.configuration": ""
+    }
+}
