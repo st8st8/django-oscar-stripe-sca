@@ -1,0 +1,44 @@
+{
+    "[javascript][typescript][json][jsonc][css]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "biomejs.biome",
+        // use biome to lint+format on save
+        "editor.codeActionsOnSave": {
+            "source.fixAll.biome": "explicit"
+        },
+    },
+    // when we do enable html formatting, format html and django templates with djlint
+    "[html][django-html]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "monosans.djlint"
+    },
+    "[django-html]": {
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": true,
+            "strings": true
+        },
+        "djlint.enableLinting": true,
+        "djlint.profile": "django"
+    },
+    "[python]": {
+        "editor.formatOnSave": false,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "never"
+        }
+    },
+    "[json5]": {
+        "editor.defaultFormatter": "BlueGlassBlock.better-json5"
+    },
+    "python.testing.unittestArgs": [],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python-envs.pythonProjects": [
+        {
+            "path": ".",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ]
+}
