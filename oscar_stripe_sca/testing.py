@@ -1,9 +1,9 @@
 """Mock Stripe views for feature tests.
 
 
-    from django.conf import settings
-    settings.STRIPE_TESTING_OUTCOME = 'cancel'
-    settings.STRIPE_TESTING_OUTCOME = 'accept'
+from django.conf import settings
+settings.STRIPE_TESTING_OUTCOME = 'cancel'
+settings.STRIPE_TESTING_OUTCOME = 'accept'
 """
 
 from django.conf import settings as django_settings

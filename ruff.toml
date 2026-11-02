@@ -1,0 +1,49 @@
+line-length = 88
+extend-exclude = ["migrations"]
+
+[lint]
+ignore = [
+    "BLE001", 
+    # Do not catch blind exception: `Exception`.
+    # https://docs.astral.sh/ruff/rules/blind-except/
+    "SIM102", 
+    # Use a single `if` statement instead of nested `if` statements.
+    # https://docs.astral.sh/ruff/rules/collapsible-if/
+    "UP032",
+    # Use f-string instead of `format` call.
+    # https://docs.astral.sh/ruff/rules/f-string/#f-string-up032
+    "UP030",
+    # Use implicit references for positional format fields.
+    # https://docs.astral.sh/ruff/rules/format-literals/
+    "N999",
+    # Invalid module name:
+    # The - syntax is used by management commands.
+    "DTZ001",
+    # `datetime.datetime()` called without a `tzinfo` argument.
+    "RUF012",
+    # Mutable default value for class attribute.
+    # Used by Django admin.
+    "SIM103",
+    # Return the condition directly.
+    # I think this makes code less readable.
+    "SIM114",
+    # Combine `if` branches.
+    # I think this makes code less readable.
+    "RUF015",
+    # Prefer `next(iter(value.keys()))` over single element slice.
+    # Makes things harder to read.
+    "RUF100",
+    # Unused blanket `noqa` directive.
+    # We use this to stop pylance howling.
+    "PLC0206",
+    # Extracting value from dictionary without calling `.items()`.
+    # Makes code harder to read.
+]
+
+extend-unsafe-fixes = [
+    "F401",
+    # F401
+    # 1. it is legitimately unsafe https://github.com/astral-sh/ruff/issues/4056
+    # 2. it's annoying - if you comment out code, save, then uncomment it out, then you may have lost imports automatically.
+]
+# Notes
