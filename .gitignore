@@ -19,7 +19,7 @@
 .pydevproject
 .settings
 .idea
-.code-workspace
+*.code-workspace
 
 # Docs
 /docs/build/*

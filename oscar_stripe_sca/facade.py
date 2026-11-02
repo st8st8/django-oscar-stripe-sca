@@ -4,6 +4,7 @@ from decimal import Decimal as D
 
 import stripe
 from django.apps import apps
+from django.utils import timezone
 
 from oscar_stripe_sca import settings
 
