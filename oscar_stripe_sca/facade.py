@@ -4,7 +4,6 @@ import stripe
 from django.apps import apps
 from oscar_stripe_sca import settings
 from django.utils import timezone
-from django.urls import reverse_lazy
 from decimal import Decimal as D, ROUND_HALF_UP
 
 
