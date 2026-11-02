@@ -2,7 +2,7 @@ import logging
 
 import stripe
 from django.apps import apps
-from django.conf import settings
+from oscar_stripe_sca import settings
 from django.utils import timezone
 from decimal import Decimal as D, ROUND_HALF_UP
 
@@ -73,10 +73,11 @@ class Facade(object):
             # this loop will split line into discounted and non-discounted lines
             for prices in line.get_price_breakdown():
                 price_incl_tax, _, quantity = prices
+                line_item_title = line.product.title if not line.product.parent else settings.STRIPE_LINE_ITEM_FORMAT_STRING.format(line.product.parent.title, line.product.title)
                 all_line_items.append(
                     PaymentItem(
                         quantity=quantity,
-                        title=line.product.title,
+                        title=line_item_title,
                         price_incl_tax=price_incl_tax,
                         price_currency=line.price_currency
                     )
@@ -138,6 +139,7 @@ class Facade(object):
                     })
 
         basket.freeze()
+
         session = stripe.checkout.Session.create(
             mode="payment",
             customer_email=customer_email,
