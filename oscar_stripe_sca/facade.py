@@ -173,7 +173,7 @@ class Facade:
                     )
 
         basket.freeze()
-        session = self.stripe_client.checkout.sessions.create(
+        session = self.stripe_client.v1.checkout.sessions.create(
             params={
                 "mode": "payment",
                 "customer_email": customer_email,
@@ -189,11 +189,11 @@ class Facade:
         return session
 
     def retrieve(self, session_id):
-        return self.stripe_client.checkout.sessions.retrieve(session_id)
+        return self.stripe_client.v1.checkout.sessions.retrieve(session_id)
 
     def retrieve_payment_intent(self, session_id):
         session = self.retrieve(session_id)
-        return self.stripe_client.payment_intents.retrieve(session["payment_intent"])
+        return self.stripe_client.v1.payment_intents.retrieve(session["payment_intent"])
 
     def capture(self, order_number, **kwargs):
         """
@@ -209,11 +209,11 @@ class Facade:
             # get charge_id from source
             charge_id = payment_source.reference
 
-            self.stripe_client.payment_intents.update(
+            self.stripe_client.v1.payment_intents.update(
                 charge_id, params={"receipt_email": order.user.email}
             )
 
-            self.stripe_client.payment_intents.capture(charge_id)
+            self.stripe_client.v1.payment_intents.capture(charge_id)
             # set captured timestamp
             payment_source.date_captured = timezone.now()
             payment_source.save()
