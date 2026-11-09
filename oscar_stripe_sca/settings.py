@@ -1,6 +1,4 @@
 from django.conf import settings
-from django.urls import reverse_lazy
-from django.utils.functional import SimpleLazyObject
 
 STRIPE_PUBLISHABLE_KEY = getattr(settings, "STRIPE_PUBLISHABLE_KEY", None)
 STRIPE_SECRET_KEY = getattr(settings, "STRIPE_SECRET_KEY", None)

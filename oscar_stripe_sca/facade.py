@@ -1,12 +1,12 @@
 import logging
 from decimal import ROUND_HALF_UP
 from decimal import Decimal as D
+
 import stripe
 from django.apps import apps
-from . import settings
 from django.utils import timezone
 
-from oscar_stripe_sca import settings
+from . import settings
 
 logger = logging.getLogger(__name__)
 Source = apps.get_model("payment", "Source")
@@ -39,12 +39,13 @@ class PaymentItem:
         self.price_incl_tax = kwargs.get("price_incl_tax")
         self.price_currency = kwargs.get("price_currency")
 
+
 class Facade:
     stripe_client = None
+
     def __init__(self, api_key, api_version):
         self.stripe_client = stripe.StripeClient(
-            api_key=api_key,
-            stripe_version=api_version
+            api_key=api_key, stripe_version=api_version
         )
 
     @staticmethod
@@ -173,21 +174,21 @@ class Facade:
 
         basket.freeze()
         session = self.stripe_client.checkout.sessions.create(
-            params = {
+            params={
                 "mode": "payment",
                 "customer_email": customer_email,
-                "payment_method_types": ['card'],
+                "payment_method_types": ["card"],
                 "line_items": line_items,
                 "metadata": metadata,
                 "success_url": settings.STRIPE_PAYMENT_SUCCESS_URL.format(basket.id),
                 "cancel_url": settings.STRIPE_PAYMENT_CANCEL_URL.format(basket.id),
                 "payment_intent_data": {
-                    'capture_method': 'manual',
-                }
+                    "capture_method": "manual",
+                },
             }
         )
         return session
-    
+
     def retrieve(self, session_id):
         return self.stripe_client.checkout.sessions.retrieve(session_id)
 
@@ -210,10 +211,7 @@ class Facade:
             charge_id = payment_source.reference
 
             self.stripe_client.payment_intents.update(
-                charge_id,
-                params={
-                    "receipt_email": order.user.email
-                }
+                charge_id, params={"receipt_email": order.user.email}
             )
 
             self.stripe_client.payment_intents.capture(charge_id)

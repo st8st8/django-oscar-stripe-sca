@@ -32,6 +32,7 @@ Settings are described in the settings.py file:
 
  - STRIPE_PUBLISHABLE_KEY: Your key from Stripe.
  - STRIPE_SECRET_KEY: Your secret key from Stripe.
+ - STRIPE_API_VERSION: Defaults to "2025-04-30.basil"
  - STRIPE_COMPRESS_TO_ONE_LINE_ITEM (default True): If True, send the order to stripe as one combined line item, instead of one for each product.
  - STRIPE_USE_PRICES_API (default True): Use Stripe's Prices API to send line items, rather than the defunct line_item object.
    (See https://stripe.com/docs/payments/checkout/migrating-prices).

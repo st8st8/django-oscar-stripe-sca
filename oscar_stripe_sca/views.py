@@ -42,13 +42,11 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
             api_key=settings.STRIPE_SECRET_KEY,
             api_version=settings.STRIPE_API_VERSION,
         ).begin(
-            customer_email,
-            ctx["basket"],
-            ctx["order_total"],
-            ctx["shipping_method"])
+            customer_email, ctx["basket"], ctx["order_total"], ctx["shipping_method"]
+        )
         self.request.session["stripe_session_id"] = stripe_session.id
-        ctx['stripe_publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
-        ctx['stripe_session_id'] = stripe_session.id
+        ctx["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
+        ctx["stripe_session_id"] = stripe_session.id
         return ctx
 
 
@@ -94,10 +92,13 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
             currency=order_total.currency,
             amount_allocated=order_total.incl_tax,
             amount_debited=order_total.incl_tax,
-            reference=intent["id"])
+            reference=intent["id"],
+        )
         self.add_payment_source(source)
 
-        self.add_payment_event(PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=intent["id"])
+        self.add_payment_event(
+            PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=intent["id"]
+        )
 
         del self.request.session["stripe_session_id"]
 
