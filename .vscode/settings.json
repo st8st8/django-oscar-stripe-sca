@@ -1,6 +1,6 @@
 {
     "[javascript][typescript][json][jsonc][css]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": true,
         "editor.defaultFormatter": "biomejs.biome",
         // use biome to lint+format on save
         "editor.codeActionsOnSave": {
@@ -9,7 +9,7 @@
     },
     // when we do enable html formatting, format html and django templates with djlint
     "[html][django-html]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": true,
         "editor.defaultFormatter": "monosans.djlint"
     },
     "[django-html]": {
@@ -22,7 +22,7 @@
         "djlint.profile": "django"
     },
     "[python]": {
-        "editor.formatOnSave": false,
+        "editor.formatOnSave": true,
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {
             "source.fixAll": "never"
