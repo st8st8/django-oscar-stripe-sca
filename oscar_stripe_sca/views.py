@@ -75,10 +75,6 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
             ).to_integral_value()
         return ctx
 
-    @property
-    def facade(self):
-        return Facade()
-
     def handle_payment(self, order_number, order_total, **kwargs):
         intent = Facade(
             api_key=settings.STRIPE_SECRET_KEY,
