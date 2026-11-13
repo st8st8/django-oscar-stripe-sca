@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
@@ -14,7 +13,7 @@ from oscar.core.loading import get_class, get_model
 
 from oscar_stripe_sca.facade import Facade, logger
 
-from . import PAYMENT_EVENT_PURCHASE, PAYMENT_METHOD_STRIPE
+from . import PAYMENT_EVENT_PURCHASE, PAYMENT_METHOD_STRIPE, settings
 
 SourceType = get_model("payment", "SourceType")
 Source = get_model("payment", "Source")
@@ -39,11 +38,13 @@ class StripeSCAPaymentDetailsView(CorePaymentDetailsView):
         except AttributeError:
             checkout_data = self.request.session[self.checkout_session.SESSION_KEY]
             customer_email = checkout_data["guest"]["email"]
-        stripe_session = Facade().begin(
+        stripe_session = Facade(
+            api_key=settings.STRIPE_SECRET_KEY,
+            api_version=settings.STRIPE_API_VERSION,
+        ).begin(
             customer_email, ctx["basket"], ctx["order_total"], ctx["shipping_method"]
         )
         self.request.session["stripe_session_id"] = stripe_session.id
-        self.request.session["stripe_payment_intent_id"] = stripe_session.payment_intent
         ctx["stripe_publishable_key"] = settings.STRIPE_PUBLISHABLE_KEY
         ctx["stripe_session_id"] = stripe_session.id
         return ctx
@@ -74,13 +75,11 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
             ).to_integral_value()
         return ctx
 
-    @property
-    def facade(self):
-        return Facade()
-
     def handle_payment(self, order_number, order_total, **kwargs):
-        pi = self.request.session["stripe_payment_intent_id"]
-        intent = self.facade.retrieve_payment_intent(pi)
+        intent = Facade(
+            api_key=settings.STRIPE_SECRET_KEY,
+            api_version=settings.STRIPE_API_VERSION,
+        ).retrieve_payment_intent(self.request.session["stripe_session_id"])
         intent.capture()
 
         source_type, __ = SourceType.objects.get_or_create(name=PAYMENT_METHOD_STRIPE)
@@ -89,16 +88,15 @@ class StripeSCASuccessResponseView(CorePaymentDetailsView):
             currency=order_total.currency,
             amount_allocated=order_total.incl_tax,
             amount_debited=order_total.incl_tax,
-            reference=pi,
+            reference=intent["id"],
         )
         self.add_payment_source(source)
 
         self.add_payment_event(
-            PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=pi
+            PAYMENT_EVENT_PURCHASE, order_total.incl_tax, reference=intent["id"]
         )
 
         del self.request.session["stripe_session_id"]
-        del self.request.session["stripe_payment_intent_id"]
 
     def payment_description(self, order_number, total, **kwargs):
         return "Stripe payment for order {0} by {1}".format(
