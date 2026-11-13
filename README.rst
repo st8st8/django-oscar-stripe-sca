@@ -1,18 +1,11 @@
 ===================================
-Note from Coracle
-===================================
-
-Fork of https://github.com/st8st8/django-oscar-stripe-sca which Steve does actually maintain a community version of.
-This was written from scratch by Steve once Stripe dramatically altered their payment system.
-
-===================================
 Stripe integration for django-oscar
 ===================================
 
 pip3 install django-oscar-stripe-sca
 
 This is a framework for using Stripe Checkout with a view for being SCA compliant for payments
-in Europe after September 2019.  Requires the Python Stripe API (>12), django 2.2 and above, django-oscar 3 and above.
+in Europe after September 2019.  Requires the Python Stripe API (2.27), django 2 and above, django-oscar 2 and above. 
 Based in part on django-oscar-stripe and django-oscar-paypal.
 
 Useful information:
@@ -30,9 +23,9 @@ Settings
 ========
 Settings are described in the settings.py file:
 
- - STRIPE_PUBLISHABLE_KEY: Your key from Stripe.
- - STRIPE_SECRET_KEY: Your secret key from Stripe.
- - STRIPE_API_VERSION: Defaults to "2025-04-30.basil"
+ - STRIPE_SEND_RECEIPT: (True/False) - whether to send the payment receipt to the purchaser.
+ - STRIPE_PUBLISHABLE_KEY: Your key from Stripe. `pk_live_...` or `pk_test_...`
+ - STRIPE_SECRET_KEY: Your secret key from Stripe. `sk_live_...` or `sk_test_...`
  - STRIPE_COMPRESS_TO_ONE_LINE_ITEM (default True): If True, send the order to stripe as one combined line item, instead of one for each product.
  - STRIPE_USE_PRICES_API (default True): Use Stripe's Prices API to send line items, rather than the defunct line_item object.
    (See https://stripe.com/docs/payments/checkout/migrating-prices).
