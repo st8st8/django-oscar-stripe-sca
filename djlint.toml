@@ -1,0 +1,16 @@
+# H006 Img tag should have height and width attributes.
+# H021 Inline styles should be avoided.
+# T028 Consider using spaceless tags inside attribute values. {%- if/for -%}
+# J018 (Jinja) Internal links should use the {% url ... %} pattern.
+ignore="H006,H021,J018,T028"
+# T003 Endblock should have name. Ex: {% endblock body %}.
+# This was enabled by default by djlint before, and we've already done the work.
+include="T003"
+# Requires "djlint.useEditorIndentation": false" in your vscode workspace settings.
+indent=4
+# Required to report "T0XX" when running from command line.
+profile="django"
+format_js=true
+format_css=true
+# Guardian not principally maintained by us:
+extend_exclude="guardian,media,pdfjs,private"
